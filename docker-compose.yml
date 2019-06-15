@@ -1,0 +1,13 @@
+version: '2'
+services:
+  consul:
+    image: consul:1.4.4
+    command:
+      - agent
+      - -server
+      - -bootstrap-expect=1
+      - -node=node1
+      - -bind=0.0.0.0
+      - -client=0.0.0.0
+      - -datacenter=dc1
+      - -ui
