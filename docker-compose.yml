@@ -15,7 +15,7 @@ services:
       - 8500:8500
   consul-template:
     container_name: consul-template
-    command: -consul-addr=consul:8500 -wait=2s -log-level=debug -template="/etc/ctmpl/service.conf.ctmpl:/etc/apache2/sites-available/service.conf:reload-apache2"
+    command: -consul-addr=consul:8500 -wait=2s -log-level=debug -template="/etc/ctmpl/service.conf.ctmpl:/etc/apache2/sites-available/service.conf"
     image: slamhan/consul-template:0.20.0
     restart: always
     environment:
