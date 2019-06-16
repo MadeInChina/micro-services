@@ -1,6 +1,8 @@
 {{range services}}
   {{if .Name | regexMatch "*-service"}}
     {{range service}} {{$name := .Name}}
+    # define variables
+    {{ $APACHE_SERVER_NAME = ""}}
        {{ range .Tags }}
          {{ if . | regexMatch "APACHE_SERVER_NAME=" }}
            # found matching APACHE_SERVER_NAME in {{ . }}
