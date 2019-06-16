@@ -8,6 +8,7 @@
            # found matching APACHE_SERVER_NAME in {{ . }}
            {{ $APACHE_SERVER_NAME = . | regexReplaceAll ".*=" "" }}
          {{ end }}
+        {{ end }}
     <VirtualHost *:443>
         # VERSION 1.2.1
 
