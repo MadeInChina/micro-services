@@ -1,13 +1,13 @@
 {{ range services }}
-  {{$name := .Name}}
+    {{$name := .Name}}
 
-  {{ if $name | regexMatch "^(.+)-service$" }}
-  {{ $APACHE_SERVER_NAME := "init" }}
-  Name:{{$name}}
-     {{ range $tag := .Tags }}
-       {{ if $tag | regexMatch "^APACHE_SERVER_NAME=.+" }}{{ $APACHE_SERVER_NAME = index (. | split "=") 1 }}
-       {{ end }}
-      {{ end }}
-  ServerName {{$APACHE_SERVER_NAME}}
-  {{end}}
+    {{ if $name | regexMatch "^(.+)-service$" }}
+        {{ $APACHE_SERVER_NAME := "init" }}
+        Name:{{$name}}
+        {{ range $tag := .Tags }}
+            {{ if $tag | regexMatch "^APACHE_SERVER_NAME=.+" }}{{ $APACHE_SERVER_NAME = index (. | split "=") 1 }}
+            {{ end }}
+        {{ end }}
+        ServerName {{$APACHE_SERVER_NAME}}
+    {{end}}
 {{end}}
