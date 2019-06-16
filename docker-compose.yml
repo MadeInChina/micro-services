@@ -13,3 +13,14 @@ services:
       - -ui
     ports:
       - 8500:8500
+  consul-template:
+    container_name: consul-template
+    command: -consul-addr=consul:8500 -wait=2s -log-level=debug -template="/etc/ctmpl/service.conf.ctmpl:/etc/apache2/sites-available/service.conf:reload-apache2"
+    image: slamhan/consul-template:0.20.0
+    restart: always
+    environment:
+      APACHE_IMAGE_NAME: apache:2.4
+#    volumes_from:
+#      - apache
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
