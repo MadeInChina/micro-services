@@ -1,0 +1,87 @@
+{{range services}}
+  {{if .Name | regexMatch "*-service"}}
+    {{range service}} {{$name := .Name}}
+       {{ range .Tags }}
+         {{ if . | regexMatch "APACHE_SERVER_NAME=" }}
+           # found matching APACHE_SERVER_NAME in {{ . }}
+           {{ $APACHE_SERVER_NAME := . | regexReplaceAll ".*=" "" }}
+         {{ end }}
+    <VirtualHost *:443>
+        # VERSION 1.2.1
+
+        ServerName {{$APACHE_SERVER_NAME}}
+        ServerAlias ${APACHE_SERVER_ALIAS}
+        DocumentRoot ${APACHE_DOCUMENT_ROOT}
+        ErrorLog ${ERROR_LOG}
+    
+        <Directory ${APACHE_DOCUMENT_ROOT}>
+            Options Indexes FollowSymLinks
+            Order allow,deny
+            Allow from all
+        </Directory>
+    
+        SSLEngine on
+        SSLProxyEngine on
+        SSLCertificateFile ${SSL_CERTIFICATE_FILE}
+        SSLCertificateKeyFile ${SSL_CERTIFICATE_KEY_FILE}
+        SSLCertificateChainFile ${SSL_CERTIFICATE_CHAIN_FILE}
+    
+        ProxyRequests     Off
+        ProxyPreserveHost On
+        AllowEncodedSlashes NoDecode
+    
+        <Proxy *>
+            Order deny,allow
+            Allow from all
+        </Proxy>
+    
+        ErrorDocument 401 /maintenance/index.html
+        ErrorDocument 403 /maintenance/index.html
+        ErrorDocument 500 /maintenance/index.html
+        ErrorDocument 503 /maintenance/index.html
+    
+        ProxyTimeout 1200
+        ProxyPreserveHost On
+    
+        ProxyPass /maintenance/ !
+        ProxyPass /robots.txt !
+    
+        # MISC
+        Header set X_BILLFOLD_SITE_ID ${X_BILLFOLD_SITE_ID}
+    
+    
+        # REWRITES
+        RewriteEngine on
+    
+        RewriteRule ^/login/?$ $1/?modal=login [R=302,L]
+    
+        RewriteCond "%{REQUEST_URI}" "^/(robots\.txt|maintenance)(/|$)"
+        RewriteRule ".*" "-" [L]
+    
+        ProxyPass /billfold-api/ ajp://billfold-api:8009/billfold-api/ disablereuse=on
+        ProxyPassReverse /billfold-api/ ajp://billfold-api:8009/billfold-api/
+    
+        ProxyPass /redirect/ ajp://billfold-api:8009/redirect/ disablereuse=on
+        ProxyPassReverse /redirect/ ajp://billfold-api:8009/redirect/
+    
+        ProxyPass /deviceRedirect/ ajp://billfold-api_1:8009/deviceRedirect/
+        ProxyPassReverse /deviceRedirect/ ajp://billfold-api:8009/deviceRedirect/
+    
+        ProxyPass /apis/soap/NetEntService ajp://apis-tomcat:8009/game-apis-proxy/soap/NetEntService disablereuse=on
+        ProxyPassReverse /apis/soap/NetEntService ajp://apis-tomcat:8009/game-apis-proxy/soap/NetEntService
+    
+    </VirtualHost>
+    
+    <VirtualHost *:80>
+        ServerName ${APACHE_SERVER_NAME}
+        ServerAlias ${APACHE_SERVER_ALIAS}
+        DocumentRoot ${APACHE_DOCUMENT_ROOT}
+        ErrorLog ${ERROR_LOG}
+    
+        RewriteEngine On
+        RewriteCond %{HTTPS} !=on
+        RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
+    </VirtualHost>
+    {{end}}
+  {{end}}
+{{end}}

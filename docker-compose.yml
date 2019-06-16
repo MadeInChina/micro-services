@@ -13,12 +13,3 @@ services:
       - -ui
     ports:
       - 8500:8500
-  registrator:
-    command: -internal consul://consul:8500
-    privileged: true
-    image: gliderlabs/registrator:latest
-    restart: always
-    links:
-      - consul
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock

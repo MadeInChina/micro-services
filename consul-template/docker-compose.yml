@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+  consul1:
+    image: consul:1.4.4
+    container_name: consul_node1
+    command: agent -server -bootstrap-expect=1 -node=node1 -bind=0.0.0.0 -client=0.0.0.0 -datacenter=dc1 -ui
+    ports:
+      - 8500:8500
+  apache:
+    container_name: apache
+    image: docker.finnplay.net/apache:2.4
+    environment:
+      BO_APACHE_DOCUMENT_ROOT: /var/www/html/${DOMAIN}
+      BO_APACHE_SERVER_NAME: ${DOMAIN}
+      ENABLE_SITES: platform
+    volumes:
+      - /etc/apache2/sites-available/platform.conf
+    ports:
+      - 80:80/tcp
+  consul-template:
+    container_name: consul-template
+    command: -consul-addr=consul1:8500 -wait=2s -log-level=debug -template="/etc/ctmpl/platform.conf.ctmpl:/etc/apache2/sites-available/platform.conf:docker kill -s HUP apache"
+    image: docker.finnplay.net/consul-template:0.20.0
+    restart: always
+    environment:
+      APACHE_IMAGE_NAME: docker.finnplay.net/apache:2.4
+    volumes_from:
+      - apache
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

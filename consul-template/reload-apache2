@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+docker exec $(docker ps -q --filter ancestor=$(echo $APACHE_IMAGE_NAME)) service apache2 reload

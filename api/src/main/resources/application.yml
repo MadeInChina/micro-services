@@ -1,8 +1,10 @@
 spring:
   cloud:
     consul:
-      host: consul-server
+      host: 192.168.2.34
       port: 8500
+      discovery:
+        tags: APACHE_SERVER_NAME="demo"
   application:
     name: api-service
 
