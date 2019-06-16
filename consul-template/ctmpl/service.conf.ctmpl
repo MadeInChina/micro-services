@@ -4,7 +4,7 @@
        {{ range .Tags }}
          {{ if . | regexMatch "APACHE_SERVER_NAME=" }}
            # found matching APACHE_SERVER_NAME in {{ . }}
-           {{ $APACHE_SERVER_NAME := . | regexReplaceAll ".*=" "" }}
+           {{ $APACHE_SERVER_NAME = . | regexReplaceAll ".*=" "" }}
          {{ end }}
     <VirtualHost *:443>
         # VERSION 1.2.1
