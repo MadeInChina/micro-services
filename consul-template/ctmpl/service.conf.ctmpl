@@ -1,5 +1,5 @@
 {{range services}}
-  {{if .Name | regexMatch "*-service"}}
+  {{if .Name | regexMatch ".*-service"}}
     {{range service}} {{$name := .Name}}
     # define variables
     {{ $APACHE_SERVER_NAME = ""}}
